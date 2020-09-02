@@ -29,6 +29,11 @@ curl \
         \"comment\" : \"AWS EC2 Instance that host the 'mern-stack'\"
       }]"
 
+# sometimes, the 'whitelist' takes a bit of time so we simply 'sleep' to give
+# it a chance to be 'effective' before we go further down
+# note: this is not a proper solution but this workaround should be 'good enough' for the purpose of this exercise
+sleep 60
+
 cat <<'EOF' >> /etc/systemd/system/mern-stack.service
 [Unit]
 Description="Sets up mern-stack container"
