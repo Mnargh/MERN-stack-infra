@@ -1,8 +1,3 @@
-variable "key_pair" {
-  type = string
-  default = "mern-stack"
-}
-
 data "external" "external-ip" {
   program = ["./get-external-ip.sh"]
 }
@@ -20,7 +15,6 @@ resource "aws_instance" "mern-stack-server" {
   instance_type        = "t2.micro"
   iam_instance_profile = "mern-stack" #FIXME: this should be terraformed
   security_groups      = ["${aws_security_group.mern-stack-sg.name}"]
-  key_name             = var.key_pair #FIXME: if we choose to not manage the key pair in this terraform, then we should probably make this configurable via a variable
 
   tags = {
     Name = "mern_stack_instance"
@@ -29,9 +23,8 @@ resource "aws_instance" "mern-stack-server" {
   user_data = file("./pull-app-image.sh")
 }
 
-#TODO: for convenience, add some 'output' that display the 'ssh command' to be used
 output "ssh" {
-  value = "ssh -i ~/.ssh/${var.key_pair} ec2-user@${aws_instance.mern-stack-server.public_ip}"
+  value = "ssh ec2-user@${aws_instance.mern-stack-server.public_ip}"
 }
 
 resource "aws_eip" "mern-stack-assigned-ip" {
