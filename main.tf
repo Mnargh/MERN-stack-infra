@@ -1,5 +1,5 @@
 data "external" "external-ip" {
-  program = ["./get-external-ip.sh"]
+  program = ["./files/get-external-ip.sh"]
 }
 
 provider "aws" {
