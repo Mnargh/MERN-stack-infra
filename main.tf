@@ -1,15 +1,17 @@
-
 provider "aws" {
-  profile = "tombrandon"
+  # IMHO, when possible, the 'terraform script' should be agnostic from any 'environment setup'
+  # that increase 'portability' and push the responsibility of 'configuring the AWS access' to the
+  # operator who run the scripts
+  # profile = "tombrandon"
   region  = "eu-west-1"
 }
 
 resource "aws_instance" "mern-stack-server" {
-  ami                  = "ami-07d9160fa81ccffb5"
+  ami                  = "ami-07d9160fa81ccffb5" # Amazon Linux 2
   instance_type        = "t2.micro"
-  iam_instance_profile = "mern-stack"
-  security_groups      = ["mern-stack-sg"]
-  key_name             = "mern-stack"
+  iam_instance_profile = "mern-stack" #FIXME: this should be terraformed
+  security_groups      = ["mern-stack-sg"] #FIXME: this should rather be a reference to the resource created further below
+  key_name             = "mern-stack" #FIXME: if we choose to not manage the key pair in this terraform, then we should probably make this configurable via a variable
 
   tags = {
     Name = "mern_stack_instance"
