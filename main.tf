@@ -37,22 +37,29 @@ resource "aws_eip" "mern-stack-assigned-ip" {
 
 resource "aws_security_group" "mern-stack-sg" {
   name        = "mern-stack-sg"
-  description = "Allow inbound traffic"
+  description = "Security group for mern-stack"
+}
 
-  ingress {
-    description = "All traffic from Laptop"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["80.6.232.161/32"]
-  }
+resource "aws_security_group_rule" "allow-traffic-from-tbrandon" {
+  security_group_id = aws_security_group.mern-stack-sg.id
+  type = "ingress"
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  description = "All traffic from tbrandon"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["80.6.232.161/32"]
+}
+
+resource "aws_security_group_rule" "allow-all-egress" {
+  security_group_id = aws_security_group.mern-stack-sg.id
+  type = "egress"
+
+  description = "Allow all egress traffic"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_lb" "mern-stack-lb" {
