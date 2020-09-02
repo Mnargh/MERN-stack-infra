@@ -37,20 +37,9 @@ resource "aws_security_group" "mern-stack-sg" {
   description = "Security group for mern-stack"
 }
 
-resource "aws_security_group_rule" "allow-traffic-from-tbrandon" {
-  security_group_id = aws_security_group.mern-stack-sg.id
-  type = "ingress"
-
-  description = "All traffic from tbrandon"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  cidr_blocks = ["80.6.232.161/32"]
-}
-
 resource "aws_security_group_rule" "allow-traffic-from-current-host" {
   security_group_id = aws_security_group.mern-stack-sg.id
-  type = "ingress"
+  type              = "ingress"
 
   description = "All traffic from current machine"
   from_port   = 0
