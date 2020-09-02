@@ -1,3 +1,8 @@
+variable "key_pair" {
+  type = string
+  default = "mern-stack"
+}
+
 provider "aws" {
   # IMHO, when possible, the 'terraform script' should be agnostic from any 'environment setup'
   # that increase 'portability' and push the responsibility of 'configuring the AWS access' to the
@@ -11,13 +16,18 @@ resource "aws_instance" "mern-stack-server" {
   instance_type        = "t2.micro"
   iam_instance_profile = "mern-stack" #FIXME: this should be terraformed
   security_groups      = ["mern-stack-sg"] #FIXME: this should rather be a reference to the resource created further below
-  key_name             = "mern-stack" #FIXME: if we choose to not manage the key pair in this terraform, then we should probably make this configurable via a variable
+  key_name             = var.key_pair #FIXME: if we choose to not manage the key pair in this terraform, then we should probably make this configurable via a variable
 
   tags = {
     Name = "mern_stack_instance"
   }
 
   user_data = file("./pull-app-image.sh")
+}
+
+#TODO: for convenience, add some 'output' that display the 'ssh command' to be used
+output "ssh" {
+  value = "ssh -i ~/.ssh/${var.key_pair} ec2-user@${aws_instance.mern-stack-server.public_ip}"
 }
 
 resource "aws_eip" "mern-stack-assigned-ip" {
