@@ -20,7 +20,7 @@ resource "aws_instance" "mern-stack-server" {
     Name = "mern_stack_instance"
   }
 
-  user_data = file("./pull-app-image.sh")
+  user_data = file("./files/userdata.sh")
 }
 
 output "ssh" {
