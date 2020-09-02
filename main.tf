@@ -15,7 +15,7 @@ resource "aws_instance" "mern-stack-server" {
   ami                  = "ami-07d9160fa81ccffb5" # Amazon Linux 2
   instance_type        = "t2.micro"
   iam_instance_profile = "mern-stack" #FIXME: this should be terraformed
-  security_groups      = ["mern-stack-sg"] #FIXME: this should rather be a reference to the resource created further below
+  security_groups      = ["${aws_security_group.mern-stack-sg.name}"]
   key_name             = var.key_pair #FIXME: if we choose to not manage the key pair in this terraform, then we should probably make this configurable via a variable
 
   tags = {
