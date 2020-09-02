@@ -3,6 +3,10 @@ variable "key_pair" {
   default = "mern-stack"
 }
 
+data "external" "external-ip" {
+  program = ["./get-external-ip.sh"]
+}
+
 provider "aws" {
   # IMHO, when possible, the 'terraform script' should be agnostic from any 'environment setup'
   # that increase 'portability' and push the responsibility of 'configuring the AWS access' to the
@@ -49,6 +53,17 @@ resource "aws_security_group_rule" "allow-traffic-from-tbrandon" {
   to_port     = 0
   protocol    = "-1"
   cidr_blocks = ["80.6.232.161/32"]
+}
+
+resource "aws_security_group_rule" "allow-traffic-from-current-host" {
+  security_group_id = aws_security_group.mern-stack-sg.id
+  type = "ingress"
+
+  description = "All traffic from current machine"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["${data.external.external-ip.result.ip}/32"]
 }
 
 resource "aws_security_group_rule" "allow-all-egress" {
