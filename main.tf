@@ -40,14 +40,6 @@ resource "aws_security_group" "mern-stack-sg" {
   description = "Allow inbound traffic"
 
   ingress {
-    description = "All TCP from own sg"
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "TCP"
-    self        = true
-  }
-
-  ingress {
     description = "All traffic from Laptop"
     from_port   = 0
     to_port     = 0
