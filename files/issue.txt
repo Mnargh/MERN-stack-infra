@@ -1,0 +1,7 @@
+## Whitelisting Issue
+
+# Delay between the curl request to MongoDB Atlas API to whitelist the ec2 instance IP, 
+and actually whitelisting the instance
+
+When the service is run on the instance to start the container running the application,
+the ip is still not yet whitelisted, so the server cannot connect to the database, and errors
