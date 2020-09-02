@@ -14,25 +14,20 @@ sudo service docker start
 bash -c "$(aws ecr get-login --region eu-west-1 --no-include-email)"
 docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v4
 
-## Whitelists instance IP
-# curl --user "zwbjetqj:fe3d8cdf-33f5-442e-aacb-41ae7b29211e" --digest --include \    (master✱)
-#   --header "Accept: application/json" \
-#   --header "Content-Type: application/json" \
-#   --request POST "https://cloud.mongodb.com/api/atlas/v1.0/groups/5e2601bc553855b403e9fc89/whitelist?pretty=true" \
-#   --data '[{
-#         "cidrBlock" : "54.73.108.178/32",
-#         "comment" : "CIDR block for mern instance"
-#       }]'
+PUBLIC_IP=$(curl -s ifconfig.io)
 
+MONGODB_GROUP_ID=5e2601bc553855b403e9fc89
+MONGODB_PUB_API_KEY=ulevwoxu
+MONGODB_SECRET_API_KEY=b14e2408-7bde-4d18-b304-b511abf45f71
 
-aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values='mern_stack_instance'" "Name=instance-state-name,Values=pending,running" \
-  --query "Instances[*].PublicIpAddress" \
-  --output=text
-
-
-
-
+curl \
+  --user "${MONGODB_PUB_API_KEY}:${MONGODB_SECRET_API_KEY}" --digest --include \
+  --header "Content-Type: application/json" \
+  --request POST "https://cloud.mongodb.com/api/atlas/v1.0/groups/${MONGODB_GROUP_ID}/whitelist?pretty=true" \
+  --data "[{
+        \"cidrBlock\" : \"${PUBLIC_IP}/32\",
+        \"comment\" : \"AWS EC2 Instance that host the 'mern-stack'\"
+      }]"
 
 cat <<'EOF' >> /etc/systemd/system/mern-stack.service
 [Unit]
