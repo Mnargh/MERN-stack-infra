@@ -182,4 +182,22 @@ resource "aws_lb_target_group_attachment" "mern-stack-lb-tg-attach" {
   port             = 80
 }
 
+data "aws_route53_zone" "useyourbrain" {
+  name         = "t.useyourbra.in."
+}
 
+resource "aws_route53_record" "main" {
+  zone_id = data.aws_route53_zone.useyourbrain.zone_id
+  name    = "test.t.useyourbra.in"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.mern-stack-lb.dns_name
+    zone_id                = aws_lb.mern-stack-lb.zone_id
+    evaluate_target_health = false
+  }
+}
+
+output "web" {
+  value = "https://${aws_route53_record.main.fqdn}"
+}
