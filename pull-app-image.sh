@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# add extra ssh keys for convenience
+cat <<EOF >>/home/ec2-user/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfdZxWI6H+caoSMHdfYzx/gf12uWIw0YgNGDaO8Uai+rIulY1rTZdjZZZrQGE7U5ImI9CzGn0sAZ9MQo5wlQA7r+95rb962iqmYmKONPhPD+sB2+Z/xcOd9JqIfTYAfgJ7SlNc8P0neX75lI/YKvjPyAEa6qMznNDunGAE8MUrOxdpzgUlXeTEKaY5hI9NIwMuq1AkMlXujf1VwxreYbM6e1DmB2A/T2vzY3uRecRMKDN3STPaTuwnPuf0PLCPR/BYCcJtJOVqLPyZe9AT/lgvEzIN29xrsBCRzclkUjfGGT2zHGwUtlbm1cqDQMRmaY5W7uD9XA/96cMOH4reBNUP stang@ecsd-mbp16
+EOF
+
 echo "Started user data" > /home/ec2-user/test.txt
 
 sudo yum update -y
