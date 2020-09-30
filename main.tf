@@ -190,3 +190,21 @@ resource "aws_route53_record" "main" {
 output "web" {
   value = "https://${aws_route53_record.main.fqdn}"
 }
+
+# terraform state file setup
+# S3 bucket to store the state file in
+resource "aws_s3_bucket" "terraform-state-storage-s3" {
+    bucket = "terraform-remote-state-storage-s3"
+ 
+    versioning {
+      enabled = true
+    }
+ 
+    lifecycle {
+      prevent_destroy = true
+    }
+ 
+    tags {
+      Name = "S3 Remote Terraform State Store"
+    }      
+}
