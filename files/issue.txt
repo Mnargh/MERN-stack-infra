@@ -1,0 +1,22 @@
+## Whitelisting Issue
+
+# Delay between the curl request to MongoDB Atlas API to whitelist the ec2 instance IP, 
+and actually whitelisting the instance
+
+When the service is run on the instance to start the container running the application,
+the ip is still not yet whitelisted, so the server cannot connect to the database, and errors
+
+# Options
+
+1. Sleep
+    Pros: Easy
+    Cons: Inefficient use of time, No error handling if request fails or if takes longer than usual to whitelist
+
+2. Request to check the status of the whitelisting every few seconds, when available, resume script
+    Pros: More efficient use of time, cool/relatively easy to implement
+    Cons: Can be a lot of requests - may use up quota for free usage
+
+3. Error handling on the application side, if server doesn't connect, can it retry after X amount of time
+    Pros: More resilient solution, not dependent on infrastructure, more efficient use of time
+    Cons: more difficult at present to implement
+

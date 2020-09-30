@@ -1,21 +1,30 @@
+data "external" "external-ip" {
+  program = ["./files/get-external-ip.sh"]
+}
 
 provider "aws" {
-  profile = "tombrandon"
+  # IMHO, when possible, the 'terraform script' should be agnostic from any 'environment setup'
+  # that increase 'portability' and push the responsibility of 'configuring the AWS access' to the
+  # operator who run the scripts
+  # profile = "tombrandon"
   region  = "eu-west-1"
 }
 
 resource "aws_instance" "mern-stack-server" {
-  ami                  = "ami-07d9160fa81ccffb5"
+  ami                  = "ami-07d9160fa81ccffb5" # Amazon Linux 2
   instance_type        = "t2.micro"
-  iam_instance_profile = "mern-stack"
-  security_groups      = ["mern-stack-sg"]
-  key_name             = "mern-stack"
+  iam_instance_profile = "mern-stack" #FIXME: this should be terraformed
+  security_groups      = ["${aws_security_group.mern-stack-sg.name}"]
 
   tags = {
     Name = "mern_stack_instance"
   }
 
-  user_data = file("./pull-app-image.sh")
+  user_data = file("./files/userdata.sh")
+}
+
+output "ssh" {
+  value = "ssh ec2-user@${aws_instance.mern-stack-server.public_ip}"
 }
 
 resource "aws_eip" "mern-stack-assigned-ip" {
@@ -25,30 +34,29 @@ resource "aws_eip" "mern-stack-assigned-ip" {
 
 resource "aws_security_group" "mern-stack-sg" {
   name        = "mern-stack-sg"
-  description = "Allow inbound traffic"
+  description = "Security group for mern-stack"
+}
 
-  ingress {
-    description = "All TCP from own sg"
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "TCP"
-    self        = true
-  }
+resource "aws_security_group_rule" "allow-traffic-from-current-host" {
+  security_group_id = aws_security_group.mern-stack-sg.id
+  type              = "ingress"
 
-  ingress {
-    description = "All traffic from Laptop"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["80.6.232.161/32"]
-  }
+  description = "All traffic from current machine"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["${data.external.external-ip.result.ip}/32"]
+}
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "allow-all-egress" {
+  security_group_id = aws_security_group.mern-stack-sg.id
+  type = "egress"
+
+  description = "Allow all egress traffic"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_lb" "mern-stack-lb" {
@@ -163,4 +171,22 @@ resource "aws_lb_target_group_attachment" "mern-stack-lb-tg-attach" {
   port             = 80
 }
 
+data "aws_route53_zone" "useyourbrain" {
+  name         = "t.useyourbra.in."
+}
 
+resource "aws_route53_record" "main" {
+  zone_id = data.aws_route53_zone.useyourbrain.zone_id
+  name    = "test.t.useyourbra.in"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.mern-stack-lb.dns_name
+    zone_id                = aws_lb.mern-stack-lb.zone_id
+    evaluate_target_health = false
+  }
+}
+
+output "web" {
+  value = "https://${aws_route53_record.main.fqdn}"
+}
