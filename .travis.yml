@@ -1,0 +1,21 @@
+language: bash
+
+jobs:
+  include:
+    - stage: first 
+      name: first
+    script:
+        - echo "First stage echo"
+    - stage: sleep
+      name: sleep
+      script:
+        - sleep 10
+        - echo "Sleep stage echo"
+    - stage: second
+      name: second
+      script:
+        - echo "Second stage echo"
+    - stage: third
+      name: third
+      script:
+        - echo "Third stage echo"
