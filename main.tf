@@ -190,3 +190,4 @@ resource "aws_route53_record" "main" {
 output "web" {
   value = "https://${aws_route53_record.main.fqdn}"
 }
+
