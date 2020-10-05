@@ -1,21 +1,22 @@
 language: bash
 
+env: 
+    - tf_version=0.12.29
+
+before_install: 
+  - wget https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_linux_amd64.zip
+  - unzip terraform_${tf_version}_linux_amd64.zip
+  - sudo mv terraform /usr/local/bin
+  - rm terraform_${tf_version}_linux_amd64.zip
+    
 jobs:
   include:
     - stage: first 
       name: first
       script:
         - echo "First stage echo"
-    - stage: sleep
-      name: sleep
-      script:
-        - sleep 10
-        - echo "Sleep stage echo"
-    - stage: second
-      name: second
-      script:
-        - echo "Second stage echo"
-    - stage: third
-      name: third
-      script:
-        - echo "Third stage echo"
+        - terraform -v
+        - terraform init
+        - terraform validate
+        - terraform plan
+ 
