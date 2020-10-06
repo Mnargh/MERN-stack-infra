@@ -23,6 +23,7 @@ jobs:
       name: terraform apply
       if: branch = master
       script:
-        - terraform appy --auto-approve
+        - terraform init
+        - terraform apply --auto-approve
         
  
