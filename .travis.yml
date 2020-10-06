@@ -19,5 +19,10 @@ jobs:
         - terraform init
         - terraform validate
         - terraform plan
-    
+    - stage: terraform apply
+        name: terraform apply
+        if: branch = master
+        script:
+          - terraform appy --auto-approve
+        
  
