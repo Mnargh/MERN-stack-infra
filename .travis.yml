@@ -11,12 +11,13 @@ before_install:
     
 jobs:
   include:
-    - stage: first 
-      name: first
+    - stage: terraform plan
+      name: terraform plan
+      if: NOT branch = master
       script:
-        - echo "First stage echo"
         - terraform -v
         - terraform init
         - terraform validate
         - terraform plan
+    
  
