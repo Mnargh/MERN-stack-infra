@@ -1,5 +1,5 @@
 data "external" "external-ip" {
-  program = ["./files/get-external-ip.sh"]
+  program = ["../../files/get-external-ip.sh"]
 }
 
 provider "aws" {
@@ -7,7 +7,7 @@ provider "aws" {
   # that increase 'portability' and push the responsibility of 'configuring the AWS access' to the
   # operator who run the scripts
   # profile = "tombrandon"
-  region  = "eu-west-1"
+  region = "eu-west-1"
 }
 
 resource "aws_instance" "mern-stack-server" {
@@ -20,7 +20,7 @@ resource "aws_instance" "mern-stack-server" {
     Name = "mern_stack_instance"
   }
 
-  user_data = file("./files/userdata.sh")
+  user_data = file("../../files/userdata.sh")
 }
 
 output "ssh" {
@@ -50,7 +50,7 @@ resource "aws_security_group_rule" "allow-traffic-from-current-host" {
 
 resource "aws_security_group_rule" "allow-all-egress" {
   security_group_id = aws_security_group.mern-stack-sg.id
-  type = "egress"
+  type              = "egress"
 
   description = "Allow all egress traffic"
   from_port   = 0
@@ -172,7 +172,7 @@ resource "aws_lb_target_group_attachment" "mern-stack-lb-tg-attach" {
 }
 
 data "aws_route53_zone" "useyourbrain" {
-  name         = "t.useyourbra.in."
+  name = "t.useyourbra.in."
 }
 
 resource "aws_route53_record" "main" {
