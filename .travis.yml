@@ -5,25 +5,31 @@ env:
 
 before_install: 
   - wget https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_linux_amd64.zip
-  - unzip terraform_${tf_version}_linux_amd64.zip
+  - unzip -u terraform_${tf_version}_linux_amd64.zip 
   - sudo mv terraform /usr/local/bin
   - rm terraform_${tf_version}_linux_amd64.zip
     
 jobs:
   include:
-    - stage: terraform plan
+    - stage: terraform plan dev
       name: terraform plan
       if: NOT branch = master
       script:
+        - pwd
+        - ls -a
+        - cd terraform
         - terraform -v
-        - terraform init
+        - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
+        - terraform workspace select dev
         - terraform validate
-        - terraform plan
+        - terraform plan -var-file=../variables/dev.tfvars
     - stage: terraform apply
       name: terraform apply
       if: branch = master
       script:
-        - terraform init
-        - terraform apply --auto-approve
+        - terraform -v
+        - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
+        - terraform validate
+        # - terraform apply --auto-approve
         
  
