@@ -15,8 +15,6 @@ jobs:
       name: terraform plan
       if: NOT branch = master
       script:
-        - pwd
-        - ls -a
         - cd resources
         - terraform -v
         - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
@@ -27,9 +25,11 @@ jobs:
       name: terraform apply
       if: branch = master
       script:
+        - cd resources
         - terraform -v
         - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
+        - terraform workspace select prod
         - terraform validate
-        # - terraform apply --auto-approve
+        - terraform plan -var-file=../variables/prod.tfvars
         
  
