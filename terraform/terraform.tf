@@ -3,6 +3,6 @@ terraform {
     encrypt = true
     bucket  = "tf-remote-state-bucket-mern-stack"
     region  = "eu-west-1"
-    # key     = "terraform.tfstate"
+    key     = "terraform.tfstate"
   }
 }

@@ -1,5 +1,5 @@
 data "external" "external-ip" {
-  program = ["../../files/get-external-ip.sh"]
+  program = ["../files/get-external-ip.sh"]
 }
 
 provider "aws" {
@@ -20,7 +20,7 @@ resource "aws_instance" "mern-stack-server" {
     Name = "mern-stack-instance-${var.env_prefix}"
   }
 
-  user_data = file("../../files/userdata.sh")
+  user_data = file("../files/userdata.sh")
 }
 
 output "ssh" {
