@@ -1,5 +1,5 @@
 data "external" "external-ip" {
-  program = ["./files/get-external-ip.sh"]
+  program = ["../files/get-external-ip.sh"]
 }
 
 provider "aws" {
@@ -7,7 +7,7 @@ provider "aws" {
   # that increase 'portability' and push the responsibility of 'configuring the AWS access' to the
   # operator who run the scripts
   # profile = "tombrandon"
-  region  = "eu-west-1"
+  region = "eu-west-1"
 }
 
 resource "aws_instance" "mern-stack-server" {
@@ -17,10 +17,10 @@ resource "aws_instance" "mern-stack-server" {
   security_groups      = ["${aws_security_group.mern-stack-sg.name}"]
 
   tags = {
-    Name = "mern_stack_instance"
+    Name = "mern-stack-instance-${var.env_prefix}"
   }
 
-  user_data = file("./files/userdata.sh")
+  user_data = file("../files/userdata.sh")
 }
 
 output "ssh" {
@@ -33,7 +33,7 @@ resource "aws_eip" "mern-stack-assigned-ip" {
 }
 
 resource "aws_security_group" "mern-stack-sg" {
-  name        = "mern-stack-sg"
+  name        = "mern-stack-sg-${var.env_prefix}"
   description = "Security group for mern-stack"
 }
 
@@ -50,7 +50,7 @@ resource "aws_security_group_rule" "allow-traffic-from-current-host" {
 
 resource "aws_security_group_rule" "allow-all-egress" {
   security_group_id = aws_security_group.mern-stack-sg.id
-  type = "egress"
+  type              = "egress"
 
   description = "Allow all egress traffic"
   from_port   = 0
@@ -60,7 +60,7 @@ resource "aws_security_group_rule" "allow-all-egress" {
 }
 
 resource "aws_lb" "mern-stack-lb" {
-  name               = "mern-stack-lb"
+  name               = "mern-stack-lb-${var.env_prefix}"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.mern-stack-lb-sg.id]
@@ -68,7 +68,7 @@ resource "aws_lb" "mern-stack-lb" {
 }
 
 resource "aws_security_group" "mern-stack-lb-sg" {
-  name        = "mern-stack-lb-sg"
+  name        = "mern-stack-lb-sg-${var.env_prefix}"
   description = "load balancer security group terraformed"
 
   ingress {
@@ -159,7 +159,7 @@ resource "aws_lb_listener" "front-end-mern-stack-https" {
 }
 
 resource "aws_lb_target_group" "mern-stack-lb-target" {
-  name     = "mern-stack-lb-tg"
+  name     = "mern-stack-lb-tg-${var.env_prefix}"
   port     = 80
   protocol = "HTTP"
   vpc_id   = "vpc-34120e52"
@@ -172,12 +172,12 @@ resource "aws_lb_target_group_attachment" "mern-stack-lb-tg-attach" {
 }
 
 data "aws_route53_zone" "useyourbrain" {
-  name         = "t.useyourbra.in."
+  name = "t.useyourbra.in."
 }
 
 resource "aws_route53_record" "main" {
   zone_id = data.aws_route53_zone.useyourbrain.zone_id
-  name    = "test.t.useyourbra.in"
+  name    = "${var.env_prefix}.t.useyourbra.in"
   type    = "A"
 
   alias {
