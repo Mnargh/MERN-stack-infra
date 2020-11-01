@@ -16,10 +16,6 @@ docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v4
 
 PUBLIC_IP=$(curl -s ifconfig.io)
 
-MONGODB_GROUP_ID=5e2601bc553855b403e9fc89
-MONGODB_PUB_API_KEY=ulevwoxu
-MONGODB_SECRET_API_KEY=b14e2408-7bde-4d18-b304-b511abf45f71
-
 curl \
   --user "${MONGODB_PUB_API_KEY}:${MONGODB_SECRET_API_KEY}" --digest --include \
   --header "Content-Type: application/json" \

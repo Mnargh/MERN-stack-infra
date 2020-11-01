@@ -23,13 +23,13 @@ resource "aws_instance" "mern-stack-server" {
   user_data = file("../files/userdata.sh")
 }
 
-output "ssh" {
-  value = "ssh ec2-user@${aws_instance.mern-stack-server.public_ip}"
-}
-
 resource "aws_eip" "mern-stack-assigned-ip" {
   instance = aws_instance.mern-stack-server.id
   vpc      = true
+}
+
+output "ssh" {
+  value = "ssh ec2-user@${aws_eip.mern-stack-assigned-ip.public_ip}"
 }
 
 resource "aws_security_group" "mern-stack-sg" {
@@ -135,10 +135,9 @@ resource "aws_lb_listener" "front-end-mern-stack-http" {
 }
 
 data "aws_acm_certificate" "trainbrain" {
-  domain   = "test.t.useyourbra.in"
+  domain   = "${var.env_prefix}.t.useyourbra.in"
   statuses = ["ISSUED"]
 }
-
 
 resource "aws_lb_listener" "front-end-mern-stack-https" {
   load_balancer_arn = aws_lb.mern-stack-lb.arn
