@@ -5,3 +5,7 @@ variable "region" {
 variable "env_prefix" {
   description = "This is the environment where your webapp is deployed"
 }
+
+variable "MONGODB_ACCESS" {
+  description = "Establishes connection to access to mongodb atlas"
+}

@@ -32,6 +32,10 @@ output "ssh" {
   value = "ssh ec2-user@${aws_eip.mern-stack-assigned-ip.public_ip}"
 }
 
+output "mongodb_access"{
+  value ="${var.MONGODB_ACCESS}"
+}
+
 resource "aws_security_group" "mern-stack-sg" {
   name        = "mern-stack-sg-${var.env_prefix}"
   description = "Security group for mern-stack"

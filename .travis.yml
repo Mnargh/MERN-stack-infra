@@ -20,7 +20,7 @@ jobs:
         - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
         - terraform workspace select dev
         - terraform validate
-        - terraform apply -var-file=../variables/dev.tfvars --auto-approve
+        - terraform apply -var-file=../variables/dev.tfvars --auto-approve -var MONGODB_ACCESS=${MONGODB_ACCESS}
     - stage: terraform apply
       name: terraform apply
       if: branch = master
