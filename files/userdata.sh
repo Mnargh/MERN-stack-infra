@@ -12,18 +12,18 @@ sudo yum update -y
 sudo yum install docker -y
 sudo service docker start
 bash -c "$(aws ecr get-login --region eu-west-1 --no-include-email)"
-docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v4
+docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v5
 
 PUBLIC_IP=$(curl -s ifconfig.io)
 
 curl \
-  --user "${MONGODB_PUB_API_KEY}:${MONGODB_SECRET_API_KEY}" --digest --include \
-  --header "Content-Type: application/json" \
-  --request POST "https://cloud.mongodb.com/api/atlas/v1.0/groups/${MONGODB_GROUP_ID}/whitelist?pretty=true" \
-  --data "[{
-        \"cidrBlock\" : \"${PUBLIC_IP}/32\",
-        \"comment\" : \"AWS EC2 Instance that host the 'mern-stack'\"
-      }]"
+--user "${MONGODB_PUBLIC_API_KEY}:${MONGODB_SECRET_API_KEY}" --digest --include \
+--header "Content-Type: application/json" \
+--request POST "https://cloud.mongodb.com/api/atlas/v1.0/groups/${MONGODB_GROUP_ID}/whitelist?pretty=true" \
+--data "[{
+\"cidrBlock\" : \"$PUBLIC_IP/32\",
+\"comment\" : \"AWS EC2 Instance that host the 'mern-stack'\"
+}]"
 
 # sometimes, the 'whitelist' takes a bit of time so we simply 'sleep' to give
 # it a chance to be 'effective' before we go further down
@@ -46,7 +46,12 @@ EOF
 cat <<'EOF' >> /home/ec2-user/set-up-container.sh
 #!/bin/bash
 
-docker container run -itd --rm --env DANGEROUSLY_DISABLE_HOST_CHECK=true -p 80:3000 -p 5000:5000 --name super-mern-stack 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v4
+docker container run -itd --rm --env DANGEROUSLY_DISABLE_HOST_CHECK=true \
+--env "MONGODB_ACCESS=${MONGODB_ACCESS}" \
+--env JWT_SECRET=${JWT_SECRET} \
+--env GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID} \
+--env GITHUB_SECRET=${GITHUB_SECRET} \
+-p 80:3000 -p 5000:5000 --name super-mern-stack 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v5
 EOF
 
 sudo service mern-stack start

@@ -20,7 +20,21 @@ resource "aws_instance" "mern-stack-server" {
     Name = "mern-stack-instance-${var.env_prefix}"
   }
 
-  user_data = file("../files/userdata.sh")
+  user_data = data.template_file.userdata.rendered
+}
+
+data "template_file" "userdata" {
+  template = file("../files/userdata.sh")
+  vars = {
+    MONGODB_ACCESS         = "${var.MONGODB_ACCESS}"
+    MONGODB_GROUP_ID       = "${var.MONGODB_GROUP_ID}"
+    MONGODB_PUBLIC_API_KEY = "${var.MONGODB_PUBLIC_API_KEY}"
+    MONGODB_SECRET_API_KEY = "${var.MONGODB_SECRET_API_KEY}"
+    JWT_SECRET             = "${var.JWT_SECRET}"
+    GITHUB_CLIENT_ID       = "${var.GITHUB_CLIENT_ID}"
+    GITHUB_SECRET          = "${var.GITHUB_SECRET}"
+
+  }
 }
 
 resource "aws_eip" "mern-stack-assigned-ip" {
@@ -29,7 +43,7 @@ resource "aws_eip" "mern-stack-assigned-ip" {
 }
 
 output "ssh" {
-  value = "ssh ec2-user@${aws_eip.mern-stack-assigned-ip.public_ip}"
+  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.mern-stack-assigned-ip.public_ip}"
 }
 
 resource "aws_security_group" "mern-stack-sg" {
@@ -46,6 +60,17 @@ resource "aws_security_group_rule" "allow-traffic-from-current-host" {
   to_port     = 0
   protocol    = "-1"
   cidr_blocks = ["${data.external.external-ip.result.ip}/32"]
+}
+
+resource "aws_security_group_rule" "allow-traffic-for-debugging" {
+  security_group_id = aws_security_group.mern-stack-sg.id
+  type              = "ingress"
+
+  description = "All traffic from current machine"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["80.6.232.161/32"]
 }
 
 resource "aws_security_group_rule" "allow-all-egress" {
