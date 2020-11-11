@@ -39,4 +39,12 @@ jobs:
         - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
         - terraform workspace select prod
         - terraform validate
-        - terraform plan -var-file=../variables/prod.tfvars
+        - terraform apply -var-file=../variables/prod.tfvars
+          --auto-approve
+          -var MONGODB_ACCESS=${MONGODB_ACCESS}
+          -var MONGODB_GROUP_ID=${MONGODB_GROUP_ID}
+          -var MONGODB_PUBLIC_API_KEY=${MONGODB_PUBLIC_API_KEY}
+          -var MONGODB_SECRET_API_KEY=${MONGODB_SECRET_API_KEY}
+          -var JWT_SECRET=${JWT_SECRET}
+          -var GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+          -var GITHUB_SECRET=${GITHUB_SECRET}
