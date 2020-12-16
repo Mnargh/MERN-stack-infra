@@ -1,0 +1,62 @@
+stages:
+  - build-dev
+  - run-dev-tests
+  - build-prod
+
+variables:
+  tf_version: '0.12.29'
+
+before_install:
+  script:
+    - wget https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_linux_amd64.zip
+    - unzip terraform_${tf_version}_linux_amd64.zip
+    - sudo mv terraform /usr/local/bin
+    - rm terraform_${tf_version}_linux_amd64.zip
+
+dev-build-job:
+  except:
+    - master
+  stage: build-dev
+  script:
+    - cd resources
+    - terraform -v
+    - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
+    - terraform workspace select dev
+    - terraform validate
+    - terraform apply -var-file=../variables/dev.tfvars
+      --auto-approve
+      -var MONGODB_ACCESS=${MONGODB_ACCESS}
+      -var MONGODB_GROUP_ID=${MONGODB_GROUP_ID}
+      -var MONGODB_PUBLIC_API_KEY=${MONGODB_PUBLIC_API_KEY}
+      -var MONGODB_SECRET_API_KEY=${MONGODB_SECRET_API_KEY}
+      -var JWT_SECRET=${JWT_SECRET}
+      -var GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      -var GITHUB_SECRET=${GITHUB_SECRET}
+
+dev-run-tests:
+  stage: run-dev-tests
+  needs:
+
+  script:
+    # npm run cypress
+    - echo "running tests"
+
+prod-build-job:
+  only:
+    - master
+  stage: build-prod
+  script:
+    - cd resources
+    - terraform -v
+    - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
+    - terraform workspace select prod
+    - terraform validate
+    - terraform apply -var-file=../variables/prod.tfvars
+      --auto-approve
+      -var MONGODB_ACCESS=${MONGODB_ACCESS}
+      -var MONGODB_GROUP_ID=${MONGODB_GROUP_ID}
+      -var MONGODB_PUBLIC_API_KEY=${MONGODB_PUBLIC_API_KEY}
+      -var MONGODB_SECRET_API_KEY=${MONGODB_SECRET_API_KEY}
+      -var JWT_SECRET=${JWT_SECRET}
+      -var GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      -var GITHUB_SECRET=${GITHUB_SECRET}
