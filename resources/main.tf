@@ -36,7 +36,6 @@ data "template_file" "userdata" {
 
   }
 }
-
 resource "aws_eip" "mern-stack-assigned-ip" {
   instance = aws_instance.mern-stack-server.id
   vpc      = true
@@ -70,7 +69,7 @@ resource "aws_security_group_rule" "allow-traffic-for-debugging" {
   from_port   = 0
   to_port     = 0
   protocol    = "-1"
-  cidr_blocks = ["80.6.232.161/32"]
+  cidr_blocks = ["86.27.118.138/32"]
 }
 
 resource "aws_security_group_rule" "allow-all-egress" {
