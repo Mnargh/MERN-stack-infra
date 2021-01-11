@@ -33,7 +33,7 @@ data "template_file" "userdata" {
     JWT_SECRET             = "${var.JWT_SECRET}"
     GITHUB_CLIENT_ID       = "${var.GITHUB_CLIENT_ID}"
     GITHUB_SECRET          = "${var.GITHUB_SECRET}"
-
+    APP_VERSION            = "${var.APP_VERSION}"
   }
 }
 resource "aws_eip" "mern-stack-assigned-ip" {
