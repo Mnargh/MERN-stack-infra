@@ -8,11 +8,12 @@ EOF
 
 echo "Started user data" > /home/ec2-user/test.txt
 
-sudo yum update -y
-sudo yum install docker -y
-sudo service docker start
+yum update -y
+yum install docker -y
+service docker start
+
 bash -c "$(aws ecr get-login --region eu-west-1 --no-include-email)"
-docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:$APP_VERSION
+docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:${APP_VERSION}
 
 PUBLIC_IP=$(curl -s ifconfig.io)
 

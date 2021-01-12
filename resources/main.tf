@@ -45,6 +45,10 @@ output "ssh" {
   value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.mern-stack-assigned-ip.public_ip}"
 }
 
+output "app_version" {
+  value = "${var.APP_VERSION}"
+}
+
 resource "aws_security_group" "mern-stack-sg" {
   name        = "mern-stack-sg-${var.env_prefix}"
   description = "Security group for mern-stack"

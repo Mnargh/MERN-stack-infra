@@ -8,13 +8,12 @@ dev-build-job:
     - master
   stage: build-dev
   script:
-    - pwd
-    - ls
     - cd resources
     - terraform -v
     - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
     - terraform workspace select dev
     - terraform validate
+    - echo $APP_VERSION
     - terraform apply -var-file=../variables/dev.tfvars
       --auto-approve
       -var MONGODB_ACCESS=${MONGODB_ACCESS}
