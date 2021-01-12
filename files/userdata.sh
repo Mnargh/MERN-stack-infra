@@ -8,11 +8,12 @@ EOF
 
 echo "Started user data" > /home/ec2-user/test.txt
 
-sudo yum update -y
-sudo yum install docker -y
-sudo service docker start
+yum update -y
+yum install docker -y
+service docker start
+
 bash -c "$(aws ecr get-login --region eu-west-1 --no-include-email)"
-docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v5
+docker pull 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:${APP_VERSION}
 
 PUBLIC_IP=$(curl -s ifconfig.io)
 
@@ -51,7 +52,7 @@ docker container run -itd --rm --env DANGEROUSLY_DISABLE_HOST_CHECK=true \
 --env JWT_SECRET=${JWT_SECRET} \
 --env GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID} \
 --env GITHUB_SECRET=${GITHUB_SECRET} \
--p 80:3000 -p 5000:5000 --name super-mern-stack 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:v5
+-p 80:3000 -p 5000:5000 --name super-mern-stack 674726326575.dkr.ecr.eu-west-1.amazonaws.com/mern-stack:${APP_VERSION}
 EOF
 
 sudo service mern-stack start

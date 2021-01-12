@@ -8,13 +8,12 @@ dev-build-job:
     - master
   stage: build-dev
   script:
-    - pwd
-    - ls
     - cd resources
     - terraform -v
     - terraform init -backend-config="bucket=tf-remote-state-bucket-mern-stack"
     - terraform workspace select dev
     - terraform validate
+    - echo $APP_VERSION
     - terraform apply -var-file=../variables/dev.tfvars
       --auto-approve
       -var MONGODB_ACCESS=${MONGODB_ACCESS}
@@ -24,6 +23,7 @@ dev-build-job:
       -var JWT_SECRET=${JWT_SECRET}
       -var GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
       -var GITHUB_SECRET=${GITHUB_SECRET}
+      -var APP_VERSION=${APP_VERSION}
 
 dev-run-tests:
   stage: run-dev-tests
@@ -52,3 +52,4 @@ prod-build-job:
       -var JWT_SECRET=${JWT_SECRET}
       -var GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
       -var GITHUB_SECRET=${GITHUB_SECRET}
+      -var APP_VERSION=${APP_VERSION}

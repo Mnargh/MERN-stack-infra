@@ -33,7 +33,7 @@ data "template_file" "userdata" {
     JWT_SECRET             = "${var.JWT_SECRET}"
     GITHUB_CLIENT_ID       = "${var.GITHUB_CLIENT_ID}"
     GITHUB_SECRET          = "${var.GITHUB_SECRET}"
-
+    APP_VERSION            = "${var.APP_VERSION}"
   }
 }
 resource "aws_eip" "mern-stack-assigned-ip" {
@@ -43,6 +43,10 @@ resource "aws_eip" "mern-stack-assigned-ip" {
 
 output "ssh" {
   value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.mern-stack-assigned-ip.public_ip}"
+}
+
+output "app_version" {
+  value = "${var.APP_VERSION}"
 }
 
 resource "aws_security_group" "mern-stack-sg" {

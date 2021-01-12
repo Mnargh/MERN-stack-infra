@@ -38,3 +38,8 @@ variable "GITHUB_SECRET" {
   description = "Github secret to be passed to application container"
   default     = ""
 }
+
+variable "APP_VERSION" {
+  description = "Docker image version tag from which to pull"
+  default     = ""
+}
